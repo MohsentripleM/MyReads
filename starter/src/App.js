@@ -1,17 +1,20 @@
 import "./App.css";
 import * as BooksAPI from "./components/BooksAPI";
 import { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Shelves from "./components/Shelves";
+import { Route, Routes } from "react-router-dom";
+import ListBooks from "./components/ListBooks";
+import SearchBooks from "./components/SearchBooks";
 
 function App() {
   const [showSearchPage, setShowSearchpage] = useState(false);
   const [books, setBooks] = useState([]);
   const [query, setQuery] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
 
   useEffect(() => {
     BooksAPI.getAll().then((data) => {
-      setBooks(data);
+      if (data.error) setBooks([]);
+      else setBooks(data);
       console.log(data);
     });
   }, []);
@@ -20,52 +23,50 @@ function App() {
     const updatedBook = books.map((b) => {
       if (b.id === book.id) {
         book.shelf = newShelf;
-        return book;
 
-        console.log(books);
-        console.log(newShelf);
+        return book;
       }
 
       return b;
     });
     setBooks(updatedBook);
-    BooksAPI.update(book, newShelf).then((data) => console.log(data));
+    BooksAPI.update(book, newShelf);
+  };
+  useEffect(() => {
+    if (query) {
+      BooksAPI.search(query).then((data) => {
+        if (data.error) setSearchResult([]);
+        else setSearchResult(data);
+        console.log(data);
+      });
+    }
+  }, [query]);
+
+  const updateQuery = (query) => {
+    setQuery(query.trim());
+    console.log(query);
   };
 
   return (
-    <div className="app">
-      {showSearchPage ? (
-        <div className="search-books">
-          <div className="search-books-bar">
-            <a
-              className="close-search"
-              onClick={() => setShowSearchpage(!showSearchPage)}
-            >
-              Close
-            </a>
-            <div className="search-books-input-wrapper">
-              <input
-                type="text"
-                placeholder="Search by title, author, or ISBN"
-              />
-            </div>
-          </div>
-          <div className="search-books-results">
-            <ol className="books-grid"></ol>
-          </div>
-        </div>
-      ) : (
-        <div className="list-books">
-          <Header />
-          <div className="list-books-content">
-            <Shelves books={books} changeShelf={changeShelf} />
-          </div>
-          <div className="open-search">
-            <a onClick={() => setShowSearchpage(!showSearchPage)}>Add a book</a>
-          </div>
-        </div>
-      )}
-    </div>
+    <Routes className="app">
+      <Route
+        exact
+        path="/"
+        element={<ListBooks books={books} changeShelf={changeShelf} />}
+      />
+
+      <Route
+        exact
+        path="/search"
+        element={
+          <SearchBooks
+            changeShelf={changeShelf}
+            updateQuery={updateQuery}
+            searchResult={searchResult}
+          />
+        }
+      />
+    </Routes>
   );
 }
 

@@ -1,5 +1,3 @@
-import react from "react";
-
 const Book = ({ book, changeShelf }) => {
   return (
     <div>
@@ -16,10 +14,8 @@ const Book = ({ book, changeShelf }) => {
             ></div>
             <div className="book-shelf-changer">
               <select
-                defaultValue={book.shelf}
-                onChange={(e) => {
-                  changeShelf(book, e.target.value);
-                }}
+                defaultValue={book.shelf ? book.shelf : "none"}
+                onChange={(e) => changeShelf(book, e.target.value)}
               >
                 <option value="none" disabled>
                   Move to...
