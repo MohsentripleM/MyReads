@@ -1,4 +1,3 @@
-import react from "react";
 import Book from "./Book";
 
 const Shelf = ({ books, title, changeShelf }) => {

@@ -9,7 +9,9 @@ const Book = ({ book, changeShelf }) => {
               style={{
                 width: 128,
                 height: 193,
-                backgroundImage: `url(${book.imageLinks.thumbnail})`,
+                backgroundImage: book.imageLinks
+                  ? `url(${book.imageLinks.thumbnail})`
+                  : "none",
               }}
             ></div>
             <div className="book-shelf-changer">
@@ -17,9 +19,7 @@ const Book = ({ book, changeShelf }) => {
                 defaultValue={book.shelf ? book.shelf : "none"}
                 onChange={(e) => changeShelf(book, e.target.value)}
               >
-                <option value="none" disabled>
-                  Move to...
-                </option>
+                <option disabled>Move to...</option>
                 <option value="currentlyReading">Currently Reading</option>
                 <option value="wantToRead">Want to Read</option>
                 <option value="read">Read</option>
@@ -28,7 +28,7 @@ const Book = ({ book, changeShelf }) => {
             </div>
           </div>
           <div className="book-title">{book.title}</div>
-          <div className="book-authors">{book.authors}</div>
+          <div className="book-authors">{book.authors ? book.authors : ""}</div>
         </div>
       </li>
     </div>
